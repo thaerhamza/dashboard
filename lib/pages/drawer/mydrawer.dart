@@ -1,3 +1,5 @@
+import 'package:dashboard/pages/account/login.dart';
+import 'package:dashboard/pages/config.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurant/pages/account/changepassword.dart';
 //import 'package:restaurant/pages/account/myprofile.dart';
@@ -8,6 +10,18 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+  void logout(context) {
+    prefs.remove(G_use_id);
+    prefs.remove(G_use_name);
+    prefs.remove(G_use_mobile);
+    prefs.remove(G_use_image);
+
+    prefs.clear();
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => new Login()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
@@ -268,6 +282,36 @@ class _MyDrawerState extends State<MyDrawer> {
                       child: ListTile(
                         title: Text(
                           "تتبع الطلبيات",
+                          style: TextStyle(color: Colors.black, fontSize: 20.0),
+                        ),
+                        leading: Icon(
+                          Icons.drive_eta,
+                          color: Colors.red,
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.black,
+                          size: 18.0,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey[500],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(right: 10.0, left: 10.0),
+                child: Column(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        logout(context);
+                      },
+                      child: ListTile(
+                        title: Text(
+                          "خروج",
                           style: TextStyle(color: Colors.black, fontSize: 20.0),
                         ),
                         leading: Icon(

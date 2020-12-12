@@ -1,5 +1,6 @@
+import 'package:dashboard/pages/component/progress.dart';
 import 'package:flutter/material.dart';
-
+import 'package:dashboard/pages/account/login_data.dart';
 import 'package:dashboard/pages/home/home.dart';
 
 class Login extends StatefulWidget {
@@ -8,6 +9,21 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  bool isloading = false;
+  TextEditingController txtmobile = new TextEditingController();
+  TextEditingController txtpwd = new TextEditingController();
+  void login(context) async {
+    if (txtmobile.text.isNotEmpty && txtpwd.text.isNotEmpty) {
+      setState(() {
+        isloading = true;
+      });
+      bool res = await loginUsers(txtmobile.text, txtpwd.text, context);
+      setState(() {
+        isloading = res;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,14 +62,12 @@ class _LoginState extends State<Login> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(25.0)),
                         child: TextFormField(
+                          controller: txtmobile,
                           decoration: InputDecoration(
-                              hintText: "البريد الالكتروني",
-                              border: InputBorder.none),
+                              hintText: "الموبايل", border: InputBorder.none),
                           validator: (String value) {
-                            if (value.isEmpty ||
-                                value.indexOf(".") == -1 ||
-                                value.indexOf("@") == -1) {
-                              return "الرجاء ادخال البريد الالكتروني";
+                            if (value.isEmpty) {
+                              return "الرجاء ادخال الموبايل";
                             }
                           },
                         ),
@@ -68,6 +82,7 @@ class _LoginState extends State<Login> {
                           children: <Widget>[
                             Expanded(
                               child: TextFormField(
+                                controller: txtpwd,
                                 obscureText: true,
                                 decoration: InputDecoration(
                                     hintText: "كلمة المرور",
@@ -82,27 +97,27 @@ class _LoginState extends State<Login> {
                           ],
                         ),
                       ),
-                      MaterialButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => new Home()));
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              "دخول",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 20.0),
-                            ),
-                            margin: EdgeInsets.only(bottom: 10.0, top: 30.0),
-                            padding: EdgeInsets.all(2.0),
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(25.0)),
-                          )),
+                      isloading
+                          ? circularProgress()
+                          : MaterialButton(
+                              onPressed: () {
+                                login(context);
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: MediaQuery.of(context).size.width,
+                                child: Text(
+                                  "دخول",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20.0),
+                                ),
+                                margin:
+                                    EdgeInsets.only(bottom: 10.0, top: 30.0),
+                                padding: EdgeInsets.all(2.0),
+                                decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(25.0)),
+                              )),
                     ],
                   ),
                 )),

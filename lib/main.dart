@@ -1,15 +1,20 @@
 import 'package:dashboard/pages/account/login.dart';
 import 'package:dashboard/pages/home/home.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:dashboard/pages/config.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
+  G_use_id_val = prefs.getString(G_use_id);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Splash(),
   ));
 }
+
 //343434
 class Splash extends StatefulWidget {
   @override
@@ -22,7 +27,7 @@ class _SplashState extends State<Splash> {
     return new SplashScreen(
       seconds: 3,
       routeName: "/",
-      navigateAfterSeconds: new Login(),
+      navigateAfterSeconds: G_use_id_val == null ? new Login() : new Home(),
       title: new Text(
         'مرحبا بكم في تطبيق ادارة المطعم',
         style: new TextStyle(

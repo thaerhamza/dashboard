@@ -1,7 +1,11 @@
 import 'package:dashboard/pages/component/progress.dart';
+import 'package:dashboard/pages/config.dart';
+import 'package:dashboard/pages/provider/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard/pages/account/login_data.dart';
 import 'package:dashboard/pages/home/home.dart';
+import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -12,15 +16,17 @@ class _LoginState extends State<Login> {
   bool isloading = false;
   TextEditingController txtmobile = new TextEditingController();
   TextEditingController txtpwd = new TextEditingController();
-  void login(context) async {
+  void login(context, load) async {
+    if (!await checkConnection()) {
+      Toast.show("Not connected Internet", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
     if (txtmobile.text.isNotEmpty && txtpwd.text.isNotEmpty) {
-      setState(() {
-        isloading = true;
-      });
+      isloading = true;
+      load.add_loading();
       bool res = await loginUsers(txtmobile.text, txtpwd.text, context);
-      setState(() {
-        isloading = res;
-      });
+      isloading = res;
+      load.add_loading();
     }
   }
 
@@ -97,27 +103,30 @@ class _LoginState extends State<Login> {
                           ],
                         ),
                       ),
-                      isloading
-                          ? circularProgress()
-                          : MaterialButton(
-                              onPressed: () {
-                                login(context);
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                width: MediaQuery.of(context).size.width,
-                                child: Text(
-                                  "دخول",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20.0),
-                                ),
-                                margin:
-                                    EdgeInsets.only(bottom: 10.0, top: 30.0),
-                                padding: EdgeInsets.all(2.0),
-                                decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(25.0)),
-                              )),
+                      Consumer<LoadingControl>(builder: (context, load, child) {
+                        return isloading
+                            ? circularProgress()
+                            : MaterialButton(
+                                onPressed: () {
+                                  login(context, load);
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Text(
+                                    "دخول",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20.0),
+                                  ),
+                                  margin:
+                                      EdgeInsets.only(bottom: 10.0, top: 30.0),
+                                  padding: EdgeInsets.all(2.0),
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius:
+                                          BorderRadius.circular(25.0)),
+                                ));
+                      })
                     ],
                   ),
                 )),

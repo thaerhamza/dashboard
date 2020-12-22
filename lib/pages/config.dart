@@ -15,3 +15,19 @@ final String G_use_id = "use_id";
 final String G_use_name = "use_name";
 final String G_use_mobile = "use_mobile";
 final String G_use_image = "use_image";
+
+Future<bool> checkConnection() async {
+  try {
+    final result = await InternetAddress.lookup("google.com");
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      print("connect");
+      return true;
+    } else {
+      print("not connect");
+      return false;
+    }
+  } on SocketException catch (_) {
+    print("not connect");
+    return false;
+  }
+}

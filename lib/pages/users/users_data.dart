@@ -27,15 +27,17 @@ Future<bool> createUser(String use_name, String use_mobile, String use_pwd,
   }
 }
 
-Future<List> getdData(int count) async {
-  String url =
-      path_api + "users/readuser.php?start=${count}&end=20&token=" + token;
+Future<List> getdData(int count, String strSearch) async {
+  String url = path_api +
+      "users/readuser.php?txtsearch=${strSearch}&start=${count}&end=10&token=" +
+      token;
   print(url);
   http.Response respone = await http.post(url);
 
   if (json.decode(respone.body)["code"] == "200") {
     {
       List arr = (json.decode(respone.body)["message"]);
+      print(arr);
       return arr;
     }
   }

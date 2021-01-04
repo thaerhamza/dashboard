@@ -30,6 +30,7 @@ class _SplashState extends State<Splash> {
           )
         ],
         child: MaterialApp(
+            theme: ThemeData(fontFamily: 'GE_ar'),
             debugShowCheckedModeBanner: false,
             home: new SplashScreen(
               seconds: 3,

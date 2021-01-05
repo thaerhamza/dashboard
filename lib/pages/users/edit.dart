@@ -7,22 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class EditUsers extends StatefulWidget {
-  final String use_id;
-  final String use_name;
-  final String use_pwd;
-  final String use_mobile;
-  final String use_active;
-  final String use_lastdate;
-  final String use_note;
+  int use_index;
+  UsersData users;
 
-  EditUsers(
-      {this.use_id,
-      this.use_name,
-      this.use_pwd,
-      this.use_lastdate,
-      this.use_mobile,
-      this.use_active,
-      this.use_note});
+  EditUsers({this.use_index, this.users});
   @override
   _EditUsersState createState() => _EditUsersState();
 }
@@ -49,14 +37,22 @@ class _EditUsersState extends State<EditUsers> {
         myvalid) {
       isloading = true;
       load.add_loading();
-      bool res = await updateUser(
-          widget.use_id,
-          txtuse_name.text,
-          txtuse_mobile.text,
-          txtuse_pwd.text,
-          checkActive,
-          txtuse_note.text,
-          context);
+      Map arr = {
+        "use_id": widget.users.use_id,
+        "use_name": txtuse_name.text,
+        "use_mobile": txtuse_mobile.text,
+        "use_pwd": txtuse_pwd.text,
+        "use_active": checkActive ? "1" : "0",
+        "use_note": txtuse_note.text
+      };
+      bool res = await updateUser(arr, context);
+      userList[widget.use_index].use_name = txtuse_name.text;
+      userList[widget.use_index].use_mobile = txtuse_name.text;
+      userList[widget.use_index].use_pwd = txtuse_name.text;
+      userList[widget.use_index].use_note = txtuse_name.text;
+
+      userList[widget.use_index].use_active = checkActive;
+
       isloading = res;
       load.add_loading();
     } else {
@@ -66,14 +62,24 @@ class _EditUsersState extends State<EditUsers> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    txtuse_name.dispose();
+    txtuse_pwd.dispose();
+    txtuse_mobile.dispose();
+    txtuse_note.dispose();
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    txtuse_mobile.text = widget.use_mobile;
-    txtuse_name.text = widget.use_name;
-    txtuse_note.text = widget.use_note;
-    txtuse_pwd.text = widget.use_pwd;
-    if (widget.use_active == "1") {
+    txtuse_mobile.text = widget.users.use_mobile;
+    txtuse_name.text = widget.users.use_name;
+    txtuse_note.text = widget.users.use_note;
+    txtuse_pwd.text = widget.users.use_pwd;
+    if (widget.users.use_active == "1") {
       checkActive = true;
     }
   }

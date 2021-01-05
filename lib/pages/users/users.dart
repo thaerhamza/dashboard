@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:dashboard/pages/component/progress.dart';
 import 'package:dashboard/pages/provider/loading.dart';
 import 'package:dashboard/pages/users/add.dart';
@@ -9,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dashboard/pages/config.dart';
 import 'package:provider/provider.dart';
-
-List<SingleUser> userList = new List<SingleUser>();
 
 class Users extends StatefulWidget {
   @override
@@ -27,12 +24,12 @@ class _UsersState extends State<Users> {
     setState(() {});
     List arr = await getdData(count, strSearch);
     for (int i = 0; i < arr.length; i++) {
-      userList.add(new SingleUser(
+      userList.add(new UsersData(
         use_id: arr[i]["use_id"],
         use_name: arr[i]["use_name"],
         use_pwd: arr[i]["use_pwd"],
         use_mobile: arr[i]["use_mobile"],
-        use_active: arr[i]["use_active"],
+        use_active: arr[i]["use_active"] == "1" ? true : false,
         use_lastdate: arr[i]["use_lastdate"],
         use_note: arr[i]["use_note"],
       ));
@@ -53,6 +50,7 @@ class _UsersState extends State<Users> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    userList = new List<UsersData>();
     myScroll = new ScrollController();
     refreshKey = GlobalKey<RefreshIndicatorState>();
     getDataUser(0, "");
@@ -136,13 +134,7 @@ class _UsersState extends State<Users> {
                       direction: DismissDirection.startToEnd,
                       child: SingleUser(
                         use_index: index,
-                        use_id: userList[index].use_id,
-                        use_name: userList[index].use_name,
-                        use_pwd: userList[index].use_pwd,
-                        use_lastdate: userList[index].use_lastdate,
-                        use_active: userList[index].use_active,
-                        use_mobile: userList[index].use_mobile,
-                        use_note: userList[index].use_note,
+                        users: userList[index],
                       ),
                       onDismissed: (direction) {
                         userList.remove(item);
@@ -183,95 +175,6 @@ class _UsersState extends State<Users> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class SingleUser extends StatelessWidget {
-  final int use_index;
-  final String use_id;
-  final String use_name;
-  final String use_pwd;
-  final String use_mobile;
-  final String use_active;
-  final String use_lastdate;
-  final String use_note;
-  SingleUser(
-      {this.use_index,
-      this.use_id,
-      this.use_name,
-      this.use_pwd,
-      this.use_lastdate,
-      this.use_mobile,
-      this.use_active,
-      this.use_note});
-  @override
-  Widget build(BuildContext context) {
-    var providerUser = Provider.of<LoadingControl>(context);
-    return Card(
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              userList.removeAt(use_index);
-              deleteData(use_id);
-              providerUser.add_loading();
-            },
-            child: Container(
-              alignment: Alignment.topRight,
-              child: Icon(
-                Icons.cancel,
-                color: Colors.red,
-              ),
-            ),
-          ),
-          Container(
-            child: ListTile(
-              title: Text(
-                use_name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text(use_mobile), Text(use_lastdate)]),
-              trailing: Container(
-                width: 30.0,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => new EditUsers(
-                                      use_id: use_id,
-                                      use_name: use_name,
-                                      use_pwd: use_pwd,
-                                      use_mobile: use_mobile,
-                                      use_active: use_active,
-                                      use_lastdate: use_lastdate,
-                                      use_note: use_note,
-                                    )));
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: FaIcon(
-                          FontAwesomeIcons.edit,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(5.0)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

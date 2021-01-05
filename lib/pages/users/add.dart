@@ -33,14 +33,31 @@ class _AddUsersState extends State<AddUsers> {
         myvalid) {
       isloading = true;
       load.add_loading();
-      bool res = await createUser(txtuse_name.text, txtuse_mobile.text,
-          txtuse_pwd.text, checkActive, txtuse_note.text, context);
+      Map arr = {
+        "use_name": txtuse_name.text,
+        "use_mobile": txtuse_mobile.text,
+        "use_pwd": txtuse_pwd.text,
+        "use_active": checkActive ? "1" : "0",
+        "use_note": txtuse_note.text
+      };
+      bool res = await createUser(arr, context);
+
       isloading = res;
       load.add_loading();
     } else {
       Toast.show("Please fill data", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    txtuse_name.dispose();
+    txtuse_pwd.dispose();
+    txtuse_mobile.dispose();
+    txtuse_note.dispose();
   }
 
   @override

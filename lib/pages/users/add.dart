@@ -1,10 +1,13 @@
 import 'package:dashboard/pages/component/progress.dart';
 import 'package:dashboard/pages/provider/loading.dart';
+import 'package:dashboard/pages/users/users.dart';
 import 'package:dashboard/pages/users/users_data.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard/pages/config.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+
+import '../function.dart';
 
 class AddUsers extends StatefulWidget {
   @override
@@ -40,7 +43,8 @@ class _AddUsersState extends State<AddUsers> {
         "use_active": checkActive ? "1" : "0",
         "use_note": txtuse_note.text
       };
-      bool res = await createUser(arr, context);
+      bool res = await createData(
+          arr, "users/insert_user.php", context, () => Users());
 
       isloading = res;
       load.add_loading();

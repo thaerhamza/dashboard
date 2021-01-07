@@ -3,6 +3,7 @@ import 'package:dashboard/pages/provider/loading.dart';
 import 'package:dashboard/pages/users/users_data.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard/pages/config.dart';
+import 'package:dashboard/pages/function.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -24,7 +25,7 @@ class _EditUsersState extends State<EditUsers> {
   TextEditingController txtuse_mobile = new TextEditingController();
   TextEditingController txtuse_note = new TextEditingController();
 
-  updateData(context, LoadingControl load) async {
+  updateUser(context, LoadingControl load) async {
     if (!await checkConnection()) {
       Toast.show("Not connected Internet", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -45,12 +46,11 @@ class _EditUsersState extends State<EditUsers> {
         "use_active": checkActive ? "1" : "0",
         "use_note": txtuse_note.text
       };
-      bool res = await updateUser(arr, context);
+      bool res = await updateData(arr, "users/update_user.php", context);
       userList[widget.use_index].use_name = txtuse_name.text;
       userList[widget.use_index].use_mobile = txtuse_name.text;
       userList[widget.use_index].use_pwd = txtuse_name.text;
       userList[widget.use_index].use_note = txtuse_name.text;
-
       userList[widget.use_index].use_active = checkActive;
 
       isloading = res;
@@ -191,7 +191,7 @@ class _EditUsersState extends State<EditUsers> {
                               ? circularProgress()
                               : MaterialButton(
                                   onPressed: () {
-                                    updateData(context, load);
+                                    updateUser(context, load);
                                   },
                                   child: Container(
                                     alignment: Alignment.center,

@@ -7,7 +7,10 @@ import 'package:dashboard/pages/users/users_data.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dashboard/pages/config.dart';
+import 'package:dashboard/pages/function.dart';
 import 'package:provider/provider.dart';
+
+import '../function.dart';
 
 class Users extends StatefulWidget {
   @override
@@ -22,7 +25,7 @@ class _UsersState extends State<Users> {
   void getDataUser(int count, String strSearch) async {
     loadingList = true;
     setState(() {});
-    List arr = await getdData(count, strSearch);
+    List arr = await getData(count, "users/readuser.php", strSearch);
     for (int i = 0; i < arr.length; i++) {
       userList.add(new UsersData(
         use_id: arr[i]["use_id"],
@@ -138,7 +141,8 @@ class _UsersState extends State<Users> {
                       ),
                       onDismissed: (direction) {
                         userList.remove(item);
-                        deleteData(item.use_id);
+                        deleteData(
+                            "use_id", item.use_id, "users/delete_user.php");
                         myProvider.add_loading();
                       },
                     );

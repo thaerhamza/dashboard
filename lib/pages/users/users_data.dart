@@ -9,68 +9,10 @@ import 'dart:async';
 
 import 'package:provider/provider.dart';
 
+import '../function.dart';
 import 'edit.dart';
 
 List<UsersData> userList = null;
-
-Future<bool> createUser(Map arrInsert, BuildContext context) async {
-  String url = path_api + "users/insert_user.php?token=" + token;
-
-  http.Response respone = await http.post(url, body: arrInsert);
-  if (json.decode(respone.body)["code"] == "200") {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Users()));
-
-    print("success");
-    return true;
-  } else {
-    print("Failer");
-    return false;
-  }
-}
-
-Future<bool> updateUser(Map arrUpdate, BuildContext context) async {
-  String url = path_api + "users/update_user.php?token=" + token;
-
-  http.Response respone = await http.post(url, body: arrUpdate);
-  if (json.decode(respone.body)["code"] == "200") {
-    Navigator.pop(context);
-
-    print("success");
-    return true;
-  } else {
-    print("Failer");
-    return false;
-  }
-}
-
-Future<List> getdData(int count, String strSearch) async {
-  String url = path_api +
-      "users/readuser.php?txtsearch=${strSearch}&start=${count}&end=10&token=" +
-      token;
-  print(url);
-  http.Response respone = await http.post(url);
-
-  if (json.decode(respone.body)["code"] == "200") {
-    {
-      List arr = (json.decode(respone.body)["message"]);
-      print(arr);
-      return arr;
-    }
-  }
-}
-
-Future<bool> deleteData(String use_id) async {
-  String url =
-      path_api + "users/delete_user.php?use_id=${use_id}&token=" + token;
-  print(url);
-  http.Response respone = await http.post(url);
-
-  if (json.decode(respone.body)["code"] == "200") {
-    return true;
-  } else {
-    return false;
-  }
-}
 
 class UsersData {
   String use_id;
@@ -103,7 +45,7 @@ class SingleUser extends StatelessWidget {
           GestureDetector(
             onTap: () {
               userList.removeAt(use_index);
-              deleteData(users.use_id);
+              deleteData("use_id", users.use_id, "users/delete_user.php");
               providerUser.add_loading();
             },
             child: Container(

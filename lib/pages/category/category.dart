@@ -1,8 +1,13 @@
+import 'dart:ui';
+import 'package:dashboard/pages/component/progress.dart';
+import 'package:dashboard/pages/provider/loading.dart';
 import 'package:dashboard/pages/category/add.dart';
-import 'package:dashboard/pages/category/edit.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dashboard/pages/config.dart';
+import 'package:dashboard/pages/function.dart';
+import 'package:provider/provider.dart';
+import '../function.dart';
+import 'category_data.dart';
 
 class Category extends StatefulWidget {
   @override
@@ -10,61 +15,139 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  var mypro = [
-    {
-      "pro_id": "1",
-      "pro_name": "مشاوي",
-      "pro_price": "100",
-      "pro_image": "images/category/cat1.png",
-      "pro_qty": "3"
-    },
-    {
-      "pro_id": "1",
-      "pro_name": "مشاوي",
-      "pro_price": "100",
-      "pro_image": "images/category/cat1.png",
-      "pro_qty": "3"
-    },
-    {
-      "pro_id": "1",
-      "pro_name": "مشاوي",
-      "pro_price": "100",
-      "pro_image": "images/category/cat1.png",
-      "pro_qty": "3"
-    },
-    {
-      "pro_id": "1",
-      "pro_name": "مشاوي",
-      "pro_price": "100",
-      "pro_image": "images/category/cat1.png",
-      "pro_qty": "3"
-    },
-  ];
+  ScrollController myScroll;
+  GlobalKey<RefreshIndicatorState> refreshKey;
+  int i = 0;
+  bool loadingList = false;
+  void getDataCategory(int count, String strSearch) async {
+    loadingList = true;
+    setState(() {});
+    List arr = await getData(count, "category/readcategory.php", strSearch);
+    for (int i = 0; i < arr.length; i++) {
+      categoryList.add(new CategoryData(
+        cat_id: arr[i]["cat_id"],
+        cat_name: arr[i]["cat_name"],
+        cat_name_en: arr[i]["cat_name_en"],
+        cat_regdate: arr[i]["cat_regdate"],
+      ));
+    }
+    loadingList = false;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    myScroll.dispose();
+    categoryList.clear();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    categoryList = new List<CategoryData>();
+    myScroll = new ScrollController();
+    refreshKey = GlobalKey<RefreshIndicatorState>();
+    getDataCategory(0, "");
+
+    myScroll.addListener(() {
+      if (myScroll.position.pixels == myScroll.position.maxScrollExtent) {
+        i += 10;
+        getDataCategory(i, "");
+        print("scroll");
+      }
+    });
+  }
+
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text("ادارة التصنيفات");
+
+  void _searchPressed(LoadingControl myProv) {
+    if (this._searchIcon.icon == Icons.search) {
+      this._searchIcon = new Icon(Icons.close);
+      this._appBarTitle = new TextField(
+        style: TextStyle(color: Colors.white),
+        decoration: new InputDecoration(
+            prefixIcon: Icon(Icons.search), hintText: "ابحث ..."),
+        onChanged: (text) {
+          print(text);
+
+          categoryList.clear();
+          i = 0;
+          getDataCategory(0, text);
+          myProv.add_loading();
+        },
+      );
+    } else {
+      this._searchIcon = new Icon(Icons.search);
+      this._appBarTitle = new Text("بحث باسم التصنيف");
+    }
+    myProv.add_loading();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var myProvider = Provider.of<LoadingControl>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Text("ادارة التصنيفات"),
+        title: _appBarTitle,
         centerTitle: true,
+        actions: [
+          Container(
+            padding: EdgeInsets.all(10),
+            child: GestureDetector(
+              onTap: () {
+                _searchPressed(myProvider);
+              },
+              child: _searchIcon,
+            ),
+          )
+        ],
       ),
       backgroundColor: Colors.grey[50],
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Container(
-          margin: EdgeInsets.only(top: 0),
-          child: ListView.builder(
-            itemCount: mypro.length,
-            itemBuilder: (context, index) {
-              return SingleProduct(
-                pro_id: mypro[index]["pro_id"],
-                pro_name: mypro[index]["pro_name"],
-                pro_image: mypro[index]["pro_image"],
-                pro_qty: mypro[index]["pro_qty"],
-                pro_price: mypro[index]["pro_price"],
-              );
-            },
+      body: RefreshIndicator(
+        onRefresh: () async {
+          i = 0;
+          categoryList.clear();
+          await getDataCategory(0, "");
+        },
+        key: refreshKey,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 0),
+                child: ListView.builder(
+                  controller: myScroll,
+                  itemCount: categoryList.length,
+                  itemBuilder: (context, index) {
+                    final item = categoryList[index];
+                    return Dismissible(
+                      key: Key(item.cat_id),
+                      direction: DismissDirection.startToEnd,
+                      child: SingleCategory(
+                        cat_index: index,
+                        category: categoryList[index],
+                      ),
+                      onDismissed: (direction) {
+                        categoryList.remove(item);
+                        deleteData("cat_id", item.cat_id,
+                            "category/delete_category.php");
+                        myProvider.add_loading();
+                      },
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                  child: loadingList ? circularProgress() : Text(""),
+                  bottom: 0,
+                  left: MediaQuery.of(context).size.width / 2)
+            ],
           ),
         ),
       ),
@@ -90,82 +173,6 @@ class _CategoryState extends State<Category> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class SingleProduct extends StatelessWidget {
-  final String pro_id;
-  final String pro_name;
-  final String pro_price;
-  final String pro_qty;
-  final String pro_image;
-
-  SingleProduct(
-      {this.pro_id,
-      this.pro_name,
-      this.pro_image,
-      this.pro_price,
-      this.pro_qty});
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Container(
-            alignment: Alignment.topRight,
-            child: Icon(
-              Icons.cancel,
-              color: Colors.red,
-            ),
-          ),
-          Container(
-            child: ListTile(
-              title: Text(
-                pro_name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              subtitle: Text(pro_price),
-              leading: Container(
-                width: 50.0,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(pro_image),
-                    fit: BoxFit.cover,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              trailing: Container(
-                width: 30.0,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => new EditCategory()));
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: FaIcon(
-                          FontAwesomeIcons.edit,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(5.0)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

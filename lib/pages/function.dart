@@ -54,9 +54,7 @@ Future<List> getData(int count, String urlPage, String strSearch) async {
 }
 
 Future<bool> deleteData(String col_id, String val_id, String urlPage) async {
-  String url = path_api +
-      "users/${urlPage}delete_user.php?${col_id}=${val_id}&token=" +
-      token;
+  String url = path_api + "${urlPage}?${col_id}=${val_id}&token=" + token;
   print(url);
   http.Response respone = await http.post(url);
 

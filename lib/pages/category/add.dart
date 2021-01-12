@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:dashboard/pages/component/progress.dart';
 import 'package:dashboard/pages/provider/loading.dart';
 import 'package:dashboard/pages/category/category.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard/pages/config.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
 import '../function.dart';
+import 'package:path/path.dart';
 
 class AddCategory extends StatefulWidget {
   @override
@@ -36,8 +41,9 @@ class _AddCategoryState extends State<AddCategory> {
         "cat_name": txtcat_name.text,
         "cat_name_en": txtcat_name_en.text,
       };
-      bool res = await createData(
-          arr, "category/insert_category.php", context, () => Category());
+      bool res = await UploadFile(_image);
+      /*await createData(
+          arr, "category/insert_category.php", context, () => Category());*/
 
       isloading = res;
       load.add_loading();
@@ -53,6 +59,79 @@ class _AddCategoryState extends State<AddCategory> {
     super.dispose();
     txtcat_name.dispose();
     txtcat_name_en.dispose();
+  }
+
+  File _image;
+  final picker = ImagePicker();
+  Future getImageGallery() async {
+    var image = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (image != null) {
+        _image = File(image.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future getImageCamera() async {
+    var image = await picker.getImage(source: ImageSource.camera);
+    setState(() {
+      if (image != null) {
+        _image = File(image.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  void showSheetGallery(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+              child: Wrap(
+            children: [
+              new ListTile(
+                leading: new Icon(Icons.image),
+                title: new Text("معرض الصور"),
+                onTap: () {
+                  getImageGallery();
+                },
+              ),
+              new ListTile(
+                leading: new Icon(Icons.camera),
+                title: new Text("كاميرا"),
+                onTap: () {
+                  getImageCamera();
+                },
+              ),
+            ],
+          ));
+        });
+  }
+
+  Future<bool> UploadFile(File imageFile) async {
+    var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+
+    var length = await imageFile.length();
+    var uri = Uri.parse(path_api + "category/insert_category.php");
+    print(uri.path);
+    var request = new http.MultipartRequest("POST", uri);
+    var multipartFile = new http.MultipartFile("file", stream, length,
+        filename: basename(imageFile.path));
+    request.fields["cat_name"] = txtcat_name.text;
+    request.fields["cat_name_en"] = txtcat_name_en.text;
+    request.files.add(multipartFile);
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("Send succefull");
+      return true;
+    } else {
+      return false;
+      print("not send");
+    }
   }
 
   @override
@@ -113,6 +192,30 @@ class _AddCategoryState extends State<AddCategory> {
                                 }
                               },
                             ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                            child: IconButton(
+                                icon: Icon(
+                                  Icons.image,
+                                  size: 60.0,
+                                  color: Colors.orange[400],
+                                ),
+                                onPressed: () {
+                                  showSheetGallery(context);
+                                }),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(15.0),
+                            child: _image == null
+                                ? new Text("الصورة غير محددة")
+                                : new Image.file(
+                                    _image,
+                                    width: 150.0,
+                                    height: 150.0,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                           isloading
                               ? circularProgress()

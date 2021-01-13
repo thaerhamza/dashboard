@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/pages/component/progress.dart';
 import 'package:dashboard/pages/provider/loading.dart';
 import 'package:dashboard/pages/category/category_data.dart';
@@ -6,6 +7,8 @@ import 'package:dashboard/pages/config.dart';
 import 'package:dashboard/pages/function.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class EditCategory extends StatefulWidget {
   int cat_index;
@@ -22,6 +25,30 @@ class _EditCategoryState extends State<EditCategory> {
   var _formKey = GlobalKey<FormState>();
   TextEditingController txtcat_name = new TextEditingController();
   TextEditingController txtcat_name_en = new TextEditingController();
+
+  File _image;
+  final picker = ImagePicker();
+  Future getImageGallery() async {
+    var image = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (image != null) {
+        _image = File(image.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future getImageCamera() async {
+    var image = await picker.getImage(source: ImageSource.camera);
+    setState(() {
+      if (image != null) {
+        _image = File(image.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   updateCategory(context, LoadingControl load) async {
     if (!await checkConnection()) {
@@ -40,7 +67,8 @@ class _EditCategoryState extends State<EditCategory> {
         "cat_name": txtcat_name.text,
         "cat_name_en": txtcat_name_en.text,
       };
-      bool res = await updateData(arr, "category/update_category.php", context);
+      bool res = await uploadFileWithData(
+          _image, arr, "category/update_category.php", context, null, "update");
       categoryList[widget.cat_index].cat_name = txtcat_name.text;
 
       categoryList[widget.cat_index].cat_name_en = txtcat_name.text;
@@ -61,6 +89,7 @@ class _EditCategoryState extends State<EditCategory> {
     txtcat_name_en.dispose();
   }
 
+  String imageEdit = "";
   @override
   void initState() {
     // TODO: implement initState
@@ -69,6 +98,35 @@ class _EditCategoryState extends State<EditCategory> {
     txtcat_name.text = widget.mycategory.cat_name;
 
     txtcat_name_en.text = widget.mycategory.cat_name_en;
+    imageEdit = widget.mycategory.cat_thumbnail == null
+        ? ""
+        : path_images + "category/" + widget.mycategory.cat_thumbnail;
+  }
+
+  void showSheetGallery(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+              child: Wrap(
+            children: [
+              new ListTile(
+                leading: new Icon(Icons.image),
+                title: new Text("معرض الصور"),
+                onTap: () {
+                  getImageGallery();
+                },
+              ),
+              new ListTile(
+                leading: new Icon(Icons.camera),
+                title: new Text("كاميرا"),
+                onTap: () {
+                  getImageCamera();
+                },
+              ),
+            ],
+          ));
+        });
   }
 
   @override
@@ -129,6 +187,38 @@ class _EditCategoryState extends State<EditCategory> {
                                 }
                               },
                             ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                            child: IconButton(
+                                icon: Icon(
+                                  Icons.image,
+                                  size: 60.0,
+                                  color: Colors.orange[400],
+                                ),
+                                onPressed: () {
+                                  showSheetGallery(context);
+                                }),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(15.0),
+                            child: _image == null
+                                ? (imageEdit == ""
+                                    ? new Text("الصورة غير محددة")
+                                    : CachedNetworkImage(
+                                        imageUrl: imageEdit,
+                                        placeholder: (context, url) =>
+                                            CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ))
+                                : new Image.file(
+                                    _image,
+                                    width: 150.0,
+                                    height: 150.0,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                           isloading
                               ? circularProgress()

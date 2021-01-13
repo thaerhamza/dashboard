@@ -41,7 +41,8 @@ class _AddCategoryState extends State<AddCategory> {
         "cat_name": txtcat_name.text,
         "cat_name_en": txtcat_name_en.text,
       };
-      bool res = await UploadFile(_image);
+      bool res = await uploadFileWithData(_image, arr,
+          "category/insert_category.php", context, () => Category(), "insert");
       /*await createData(
           arr, "category/insert_category.php", context, () => Category());*/
 
@@ -109,29 +110,6 @@ class _AddCategoryState extends State<AddCategory> {
             ],
           ));
         });
-  }
-
-  Future<bool> UploadFile(File imageFile) async {
-    var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-
-    var length = await imageFile.length();
-    var uri = Uri.parse(path_api + "category/insert_category.php");
-    print(uri.path);
-    var request = new http.MultipartRequest("POST", uri);
-    var multipartFile = new http.MultipartFile("file", stream, length,
-        filename: basename(imageFile.path));
-    request.fields["cat_name"] = txtcat_name.text;
-    request.fields["cat_name_en"] = txtcat_name_en.text;
-    request.files.add(multipartFile);
-    var response = await request.send();
-
-    if (response.statusCode == 200) {
-      print("Send succefull");
-      return true;
-    } else {
-      return false;
-      print("not send");
-    }
   }
 
   @override

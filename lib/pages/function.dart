@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 
 Future<bool> createData(Map arrInsert, String urlPage, BuildContext context,
     Widget Function() movePage) async {
@@ -18,6 +21,39 @@ Future<bool> createData(Map arrInsert, String urlPage, BuildContext context,
   } else {
     print("Failer");
     return false;
+  }
+}
+
+Future<bool> uploadFileWithData(File imageFile, Map arrInsert, String urlPage,
+    BuildContext context, Widget Function() movePage, String type) async {
+  var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+
+  var length = await imageFile.length();
+  String url = path_api + "${urlPage}?token=" + token;
+  var uri = Uri.parse(url);
+  print(uri.path);
+  var request = new http.MultipartRequest("POST", uri);
+  var multipartFile = new http.MultipartFile("file", stream, length,
+      filename: basename(imageFile.path));
+  for (var entry in arrInsert.entries) {
+    request.fields[entry.key] = entry.value;
+  }
+
+  request.files.add(multipartFile);
+  var response = await request.send();
+
+  if (response.statusCode == 200) {
+    print("Send succefull");
+    if (type == "update") {
+      Navigator.pop(context);
+    } else if (type == "insert") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => movePage()));
+    }
+    return true;
+  } else {
+    return false;
+    print("not send");
   }
 }
 

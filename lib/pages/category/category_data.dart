@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/pages/category/edit.dart';
+import 'package:dashboard/pages/config.dart';
 import 'package:dashboard/pages/provider/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,19 +9,21 @@ import 'package:provider/provider.dart';
 import '../function.dart';
 
 List<CategoryData> categoryList = null;
+String imageCategory = path_images + "category/";
 
 class CategoryData {
   String cat_id;
   String cat_name;
   String cat_name_en;
   String cat_regdate;
+  String cat_thumbnail;
 
-  CategoryData({
-    this.cat_id,
-    this.cat_name,
-    this.cat_name_en,
-    this.cat_regdate,
-  });
+  CategoryData(
+      {this.cat_id,
+      this.cat_name,
+      this.cat_name_en,
+      this.cat_regdate,
+      this.cat_thumbnail});
 }
 
 class SingleCategory extends StatelessWidget {
@@ -49,6 +53,14 @@ class SingleCategory extends StatelessWidget {
           ),
           Container(
             child: ListTile(
+              leading: category.cat_thumbnail == null
+                  ? Text("")
+                  : CachedNetworkImage(
+                      imageUrl: imageCategory + category.cat_thumbnail,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
               title: Text(
                 category.cat_name,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

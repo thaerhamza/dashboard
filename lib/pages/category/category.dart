@@ -29,6 +29,7 @@ class _CategoryState extends State<Category> {
         cat_name: arr[i]["cat_name"],
         cat_name_en: arr[i]["cat_name_en"],
         cat_regdate: arr[i]["cat_regdate"],
+        cat_thumbnail: arr[i]["cat_thumbnail"],
       ));
     }
     loadingList = false;

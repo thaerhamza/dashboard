@@ -18,6 +18,7 @@ final String G_use_image = "use_image";
 
 Future<bool> checkConnection() async {
   try {
+    return true;
     final result = await InternetAddress.lookup("google.com");
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       print("connect");

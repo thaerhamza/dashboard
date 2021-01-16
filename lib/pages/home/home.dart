@@ -1,6 +1,7 @@
 import 'package:dashboard/pages/category/category.dart';
 import 'package:dashboard/pages/config.dart';
 import 'package:dashboard/pages/drawer/mydrawer.dart';
+import 'package:dashboard/pages/food/food.dart';
 import 'package:dashboard/pages/users/users.dart';
 
 import 'package:flutter/material.dart';
@@ -87,24 +88,30 @@ class _HomeState extends State<Home> {
               Row(
                 children: <Widget>[
                   new Expanded(
-                      child: Container(
-                    margin: EdgeInsets.all(5.0),
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15.0)),
-                    child: Column(
-                      children: <Widget>[
-                        new Icon(
-                          Icons.fastfood,
-                          size: 80.0,
-                          color: Colors.red,
-                        ),
-                        new Text(
-                          "المأكولات",
-                          style: TextStyle(fontSize: 18.0),
-                        )
-                      ],
+                      child: GestureDetector(
+                    onTap: () {
+                      /*Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Food()));*/
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(5.0),
+                      padding: EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.0)),
+                      child: Column(
+                        children: <Widget>[
+                          new Icon(
+                            Icons.fastfood,
+                            size: 80.0,
+                            color: Colors.red,
+                          ),
+                          new Text(
+                            "الدليفري",
+                            style: TextStyle(fontSize: 18.0),
+                          )
+                        ],
+                      ),
                     ),
                   )),
                   new Expanded(

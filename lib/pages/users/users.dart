@@ -25,7 +25,7 @@ class _UsersState extends State<Users> {
   void getDataUser(int count, String strSearch) async {
     loadingList = true;
     setState(() {});
-    List arr = await getData(count, "users/readuser.php", strSearch);
+    List arr = await getData(count, "users/readuser.php", strSearch, "");
     for (int i = 0; i < arr.length; i++) {
       userList.add(new UsersData(
         use_id: arr[i]["use_id"],

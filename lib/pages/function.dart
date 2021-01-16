@@ -73,9 +73,10 @@ Future<bool> updateData(
   }
 }
 
-Future<List> getData(int count, String urlPage, String strSearch) async {
+Future<List> getData(
+    int count, String urlPage, String strSearch, String param) async {
   String url = path_api +
-      "${urlPage}?txtsearch=${strSearch}&start=${count}&end=10&token=" +
+      "${urlPage}?${param}txtsearch=${strSearch}&start=${count}&end=10&token=" +
       token;
   print(url);
   http.Response respone = await http.post(url);

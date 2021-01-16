@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dashboard/pages/category/edit.dart';
+import 'package:dashboard/pages/food/edit.dart';
 import 'package:dashboard/pages/config.dart';
-import 'package:dashboard/pages/food/food.dart';
 import 'package:dashboard/pages/provider/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,40 +8,49 @@ import 'package:provider/provider.dart';
 
 import '../function.dart';
 
-List<CategoryData> categoryList = null;
-String imageCategory = path_images + "category/";
+List<FoodData> foodList = null;
+String imageFood = path_images + "food/";
 
-class CategoryData {
+class FoodData {
+  String foo_id;
   String cat_id;
-  String cat_name;
-  String cat_name_en;
-  String cat_regdate;
-  String cat_thumbnail;
+  String foo_name;
+  String foo_name_en;
+  String foo_price;
+  String foo_offer;
+  String foo_info;
+  String foo_info_en;
+  String foo_regdate;
+  String foo_thumbnail;
 
-  CategoryData(
-      {this.cat_id,
-      this.cat_name,
-      this.cat_name_en,
-      this.cat_regdate,
-      this.cat_thumbnail});
+  FoodData(
+      {this.foo_id,
+      this.cat_id,
+      this.foo_name,
+      this.foo_name_en,
+      this.foo_price,
+      this.foo_offer,
+      this.foo_info,
+      this.foo_info_en,
+      this.foo_regdate,
+      this.foo_thumbnail});
 }
 
-class SingleCategory extends StatelessWidget {
-  int cat_index;
-  CategoryData category;
-  SingleCategory({this.cat_index, this.category});
+class SingleFood extends StatelessWidget {
+  int foo_index;
+  FoodData food;
+  SingleFood({this.foo_index, this.food});
   @override
   Widget build(BuildContext context) {
-    var providerCategory = Provider.of<LoadingControl>(context);
+    var providerFood = Provider.of<LoadingControl>(context);
     return Card(
       child: Column(
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              categoryList.removeAt(cat_index);
-              deleteData(
-                  "cat_id", category.cat_id, "category/delete_category.php");
-              providerCategory.add_loading();
+              foodList.removeAt(foo_index);
+              deleteData("foo_id", food.foo_id, "food/delete_food.php");
+              providerFood.add_loading();
             },
             child: Container(
               alignment: Alignment.topRight,
@@ -54,33 +62,21 @@ class SingleCategory extends StatelessWidget {
           ),
           Container(
             child: ListTile(
-              leading: category.cat_thumbnail == null
+              leading: food.foo_thumbnail == null
                   ? Text("")
                   : CachedNetworkImage(
-                      imageUrl: imageCategory + category.cat_thumbnail,
+                      imageUrl: imageFood + food.foo_thumbnail,
                       placeholder: (context, url) =>
                           CircularProgressIndicator(),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
               title: Text(
-                category.cat_name,
+                food.foo_name,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(category.cat_regdate),
-                    RaisedButton(
-                      child: Text("اضافة المأكولات"),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    new Food(cat_id: category.cat_id)));
-                      },
-                    )
-                  ]),
+                  children: [Text(food.foo_regdate)]),
               trailing: Container(
                 width: 30.0,
                 child: Row(
@@ -90,9 +86,8 @@ class SingleCategory extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => new EditCategory(
-                                    cat_index: cat_index,
-                                    mycategory: category)));
+                                builder: (context) => new EditFood(
+                                    foo_index: foo_index, myfood: food)));
                       },
                       child: Container(
                         padding: EdgeInsets.all(5),

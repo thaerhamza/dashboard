@@ -62,8 +62,13 @@ class SingleFood extends StatelessWidget {
           ),
           Container(
             child: ListTile(
-              leading: food.foo_thumbnail == null
-                  ? Text("")
+              leading: food.foo_thumbnail == null || food.foo_thumbnail == ""
+                  ? CachedNetworkImage(
+                      imageUrl: imageFood + "def.png",
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    )
                   : CachedNetworkImage(
                       imageUrl: imageFood + food.foo_thumbnail,
                       placeholder: (context, url) =>

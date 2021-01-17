@@ -46,7 +46,8 @@ class _EditUsersState extends State<EditUsers> {
         "use_active": checkActive ? "1" : "0",
         "use_note": txtuse_note.text
       };
-      bool res = await updateData(arr, "users/update_user.php", context);
+      bool res =
+          await SaveData(arr, "users/update_user.php", context, null, "update");
       userList[widget.use_index].use_name = txtuse_name.text;
       userList[widget.use_index].use_mobile = txtuse_name.text;
       userList[widget.use_index].use_pwd = txtuse_name.text;

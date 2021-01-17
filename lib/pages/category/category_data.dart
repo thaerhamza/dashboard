@@ -54,8 +54,14 @@ class SingleCategory extends StatelessWidget {
           ),
           Container(
             child: ListTile(
-              leading: category.cat_thumbnail == null
-                  ? Text("")
+              leading: category.cat_thumbnail == null ||
+                      category.cat_thumbnail == ""
+                  ? CachedNetworkImage(
+                      imageUrl: imageCategory + "def.png",
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    )
                   : CachedNetworkImage(
                       imageUrl: imageCategory + category.cat_thumbnail,
                       placeholder: (context, url) =>
@@ -76,8 +82,9 @@ class SingleCategory extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    new Food(cat_id: category.cat_id)));
+                                builder: (context) => new Food(
+                                    cat_id: category.cat_id,
+                                    cat_name: category.cat_name)));
                       },
                     )
                   ]),

@@ -53,6 +53,7 @@ class _AddFoodState extends State<AddFood> {
         "foo_info": txtfoo_info.text,
         "foo_info_en": txtfoo_info_en.text,
       };
+
       bool res = await uploadFileWithData(
           _image,
           arr,

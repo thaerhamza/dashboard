@@ -7,15 +7,18 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 
-Future<bool> createData(Map arrInsert, String urlPage, BuildContext context,
-    Widget Function() movePage) async {
+Future<bool> SaveData(Map arrInsert, String urlPage, BuildContext context,
+    Widget Function() movePage, String type) async {
   String url = path_api + "${urlPage}?token=" + token;
 
   http.Response respone = await http.post(url, body: arrInsert);
   if (json.decode(respone.body)["code"] == "200") {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => movePage()));
-
+    if (type == "insert") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => movePage()));
+    } else {
+      Navigator.pop(context);
+    }
     print("success");
     return true;
   } else {
@@ -24,8 +27,17 @@ Future<bool> createData(Map arrInsert, String urlPage, BuildContext context,
   }
 }
 
-Future<bool> uploadFileWithData(File imageFile, Map arrInsert, String urlPage,
-    BuildContext context, Widget Function() movePage, String type) async {
+Future<bool> uploadFileWithData(
+    dynamic imageFile,
+    Map arrInsert,
+    String urlPage,
+    BuildContext context,
+    Widget Function() movePage,
+    String type) async {
+  if (imageFile == null) {
+    await SaveData(arrInsert, urlPage, context, movePage, type);
+    return false;
+  }
   var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
 
   var length = await imageFile.length();
@@ -54,22 +66,6 @@ Future<bool> uploadFileWithData(File imageFile, Map arrInsert, String urlPage,
   } else {
     return false;
     print("not send");
-  }
-}
-
-Future<bool> updateData(
-    Map arrUpdate, String urlPage, BuildContext context) async {
-  String url = path_api + "${urlPage}?token=" + token;
-
-  http.Response respone = await http.post(url, body: arrUpdate);
-  if (json.decode(respone.body)["code"] == "200") {
-    Navigator.pop(context);
-
-    print("success");
-    return true;
-  } else {
-    print("Failer");
-    return false;
   }
 }
 

@@ -98,7 +98,8 @@ class _EditCategoryState extends State<EditCategory> {
     txtcat_name.text = widget.mycategory.cat_name;
 
     txtcat_name_en.text = widget.mycategory.cat_name_en;
-    imageEdit = widget.mycategory.cat_thumbnail == null
+    imageEdit = widget.mycategory.cat_thumbnail == null ||
+            widget.mycategory.cat_thumbnail == ""
         ? ""
         : path_images + "category/" + widget.mycategory.cat_thumbnail;
   }

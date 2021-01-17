@@ -110,9 +110,10 @@ class _EditFoodState extends State<EditFood> {
     txtfoo_info.text = widget.myfood.foo_info;
     txtfoo_info_en.text = widget.myfood.foo_info_en;
 
-    imageEdit = widget.myfood.foo_thumbnail == null
-        ? ""
-        : path_images + "food/" + widget.myfood.foo_thumbnail;
+    imageEdit =
+        widget.myfood.foo_thumbnail == null || widget.myfood.foo_thumbnail == ""
+            ? ""
+            : path_images + "food/" + widget.myfood.foo_thumbnail;
   }
 
   void showSheetGallery(context) {

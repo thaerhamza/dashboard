@@ -11,7 +11,8 @@ import 'food_data.dart';
 
 class Food extends StatefulWidget {
   final String cat_id;
-  Food({this.cat_id});
+  final String cat_name;
+  Food({this.cat_id, this.cat_name});
   @override
   _FoodState createState() => _FoodState();
 }
@@ -56,6 +57,7 @@ class _FoodState extends State<Food> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _appBarTitle = new Text(widget.cat_name);
     foodList = new List<FoodData>();
     myScroll = new ScrollController();
     refreshKey = GlobalKey<RefreshIndicatorState>();
@@ -71,7 +73,7 @@ class _FoodState extends State<Food> {
   }
 
   Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text("ادارة المأكولات");
+  Widget _appBarTitle;
 
   void _searchPressed(LoadingControl myProv) {
     if (this._searchIcon.icon == Icons.search) {

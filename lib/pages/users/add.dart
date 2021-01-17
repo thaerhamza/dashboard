@@ -43,8 +43,8 @@ class _AddUsersState extends State<AddUsers> {
         "use_active": checkActive ? "1" : "0",
         "use_note": txtuse_note.text
       };
-      bool res = await createData(
-          arr, "users/insert_user.php", context, () => Users());
+      bool res = await SaveData(
+          arr, "users/insert_user.php", context, () => Users(), "insert");
 
       isloading = res;
       load.add_loading();

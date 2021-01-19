@@ -1,5 +1,6 @@
 import 'package:dashboard/pages/category/category.dart';
 import 'package:dashboard/pages/config.dart';
+import 'package:dashboard/pages/delivery/delivery.dart';
 import 'package:dashboard/pages/drawer/mydrawer.dart';
 import 'package:dashboard/pages/food/food.dart';
 import 'package:dashboard/pages/users/users.dart';
@@ -90,8 +91,8 @@ class _HomeState extends State<Home> {
                   new Expanded(
                       child: GestureDetector(
                     onTap: () {
-                      /*Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Food()));*/
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Delivery()));
                     },
                     child: Container(
                       margin: EdgeInsets.all(5.0),

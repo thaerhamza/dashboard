@@ -16,7 +16,8 @@ import 'package:path/path.dart';
 
 class AddFood extends StatefulWidget {
   final String cat_id;
-  AddFood({this.cat_id});
+  final String cat_name;
+  AddFood({@required this.cat_id, @required this.cat_name});
   @override
   _AddFoodState createState() => _AddFoodState();
 }
@@ -60,6 +61,7 @@ class _AddFoodState extends State<AddFood> {
           "food/insert_food.php",
           context,
           () => Food(
+                cat_name: widget.cat_name,
                 cat_id: widget.cat_id,
               ),
           "insert");

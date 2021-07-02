@@ -1,4 +1,5 @@
 import 'package:dashboard/pages/account/login.dart';
+import 'package:dashboard/pages/bill/bill.dart';
 import 'package:dashboard/pages/config.dart';
 import 'package:flutter/material.dart';
 //import 'package:restaurant/pages/account/changepassword.dart';
@@ -240,11 +241,10 @@ class _MyDrawerState extends State<MyDrawer> {
                   children: <Widget>[
                     InkWell(
                       onTap: () {
-                        /*  Navigator.push(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => new Shopping()));
-                    */
+                                builder: (context) => new Bill()));
                       },
                       child: ListTile(
                         title: Text(

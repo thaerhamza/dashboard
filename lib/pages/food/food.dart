@@ -12,7 +12,7 @@ import 'food_data.dart';
 class Food extends StatefulWidget {
   final String cat_id;
   final String cat_name;
-  Food({this.cat_id, this.cat_name});
+  Food({@required this.cat_id, @required this.cat_name});
   @override
   _FoodState createState() => _FoodState();
 }
@@ -173,8 +173,9 @@ class _FoodState extends State<Food> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              AddFood(cat_id: widget.cat_id)));
+                          builder: (context) => AddFood(
+                              cat_id: widget.cat_id,
+                              cat_name: widget.cat_name)));
                 },
                 child: Text(
                   "اضافة مأكولات جديدة",
